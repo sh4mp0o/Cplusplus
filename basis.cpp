@@ -86,6 +86,20 @@ int main()
 	}
 	cout << "length = " << len1 << endl;
 
+	int len2 = 0;
+	__asm {
+		lea		edi, string
+		mov		ecx, 100
+		mov		esi, edi
+		mov		al, 0
+		repne	scasb
+		sub		edi,esi
+		dec		edi
+		mov		[len2], edi
+
+	}
+	cout << "length = " << len2 << endl;
+
 	system("pause");
 	return 0;
 }
