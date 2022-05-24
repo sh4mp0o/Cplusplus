@@ -19,44 +19,44 @@ int main()
 
 
 
-	//int result;   	 
-	//__asm {
-	//	mov		eax, [number1]
-	//	add		eax, [number2]
-	//	mov		[result], eax
-	//}
-	//cout << "result = " << result << endl;
+		//int result;   	 
+		//__asm {
+		//	mov		eax, [number1]
+		//	add		eax, [number2]
+		//	mov		[result], eax
+		//}
+		//cout << "result = " << result << endl;
 
 
-	//const int N = 10;
-	//int array[N] = { 1, 2, 3, 4, 5 }; // = {0}; (тогда все 10 элементов будут нулями)
+		//const int N = 10;
+		//int array[N] = { 1, 2, 3, 4, 5 }; // = {0}; (тогда все 10 элементов будут нулями)
 
-	//for (int i = 0; i < N; i++)
-	//{
-	//	cout << array[i] << " ";
-	//}
-	//cout << endl;
+		//for (int i = 0; i < N; i++)
+		//{
+		//	cout << array[i] << " ";
+		//}
+		//cout << endl;
 
-	//for (int & item : array) {		//analog foreach c# /*(амперсанд дает менят значение переменной по адресу)*/
-	//	item++;
-	//	cout << item << " ";
-	//}
-	//cout << endl;
+		//for (int & item : array) {		//analog foreach c# /*(амперсанд дает менят значение переменной по адресу)*/
+		//	item++;
+		//	cout << item << " ";
+		//}
+		//cout << endl;
 
-	//for (int i = 0; i < N; i++)
-	//{
-	//	cout << &array[i] << " ";	/*(амперсанд дает менят значение переменной по адресу)*/
-	//}
-	//cout << endl;
+		//for (int i = 0; i < N; i++)
+		//{
+		//	cout << &array[i] << " ";	/*(амперсанд дает менят значение переменной по адресу)*/
+		//}
+		//cout << endl;
 
-	//int* ptr = new int[5]; // *(ptr+3) == ptr[3]
-	//
-	//for (int i = 0; i < 5; i++)
-	//{
-	//	cout << ptr + i << " " << *(ptr + i) << " " << ptr[i] << endl;
-	//}
+		//int* ptr = new int[5]; // *(ptr+3) == ptr[3]
+		//
+		//for (int i = 0; i < 5; i++)
+		//{
+		//	cout << ptr + i << " " << *(ptr + i) << " " << ptr[i] << endl;
+		//}
 
-	//delete[]ptr;
+		//delete[]ptr;
 
 	char string[100];
 	cout << "Input string: ";
@@ -75,13 +75,13 @@ int main()
 	int len1 = 0;								//тоже самое на ассемблере
 	__asm {
 		lea		edi, string						//mov edi,string (если fasm) //аналог
-		l1:
+		l1 :
 		cmp		byte ptr[edi], 0
-		je		_l1
-		inc		[len1]
-		inc		edi
-		jmp		l1
-		_l1:
+			je		_l1
+			inc[len1]
+			inc		edi
+			jmp		l1
+			_l1 :
 
 	}
 	cout << "length = " << len1 << endl;
@@ -93,12 +93,55 @@ int main()
 		mov		esi, edi
 		mov		al, 0
 		repne	scasb
-		sub		edi,esi
+		sub		edi, esi
 		dec		edi
-		mov		[len2], edi
+		mov[len2], edi
 
 	}
 	cout << "length = " << len2 << endl;
+
+	char string1[101];
+	int lengthWords[50] = {}, cntWords = 0;
+	__asm {
+		lea		esi, string
+		lea		ebx, string1
+		lea		edx, lengthWords
+		mov		ecx, [len1]
+		cld
+
+		l11 :
+			mov		edi, esi
+			mov		al, ' '
+			repne	scasb
+			jecxz	l3
+			dec		edi
+
+		l3:
+			sub		edi, esi
+			mov[edx], edi
+			add		edx, 4
+			inc[cntWords]
+			push	ecx
+			mov		ecx, edi
+			mov		edi, ebx
+			rep		movsb
+			mov		byte ptr[edi], '\n'
+			mov		ebx, edi
+			inc		ebx
+			inc		esi
+			pop		ecx
+			jecxz	l2
+			jmp		l11
+
+			l2 :
+			mov		[ebx], '\0'
+	}
+	for (int i = 0; i < cntWords; i++)
+	{
+		cout << lengthWords[i] << " ";
+	}
+	cout << endl;
+	cout << string1;
 
 	system("pause");
 	return 0;
